@@ -46,7 +46,7 @@ git push <upstream> <into-branch> #push the changes upstream that were merged
 
 _other git commands_
 ```bash
-git status #gets the status of the working tree
+git status #gets the status of the working tree and any merges, particularly if there are any merge conflicts
 git remote -v #gets the stored remote upstream urls
 git remote remove <upstream> #removes the declared upstream urls by alias
 git config -l #lists the stored config variables
