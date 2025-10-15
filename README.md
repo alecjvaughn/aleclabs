@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 _create firecms app_\
 ```bash
 yarn create firecms-app # Scaffolds the backend CMS
@@ -118,3 +119,5 @@ git remote -v #gets the stored remote upstream urls
 git remote remove <upstream> #removes the declared upstream urls by alias
 git config -l #lists the stored config variables
 ```
+=======
+>>>>>>> 41e74924 (Revert "update README.md")
