@@ -118,6 +118,14 @@ gh pr create --title "Pull Request Title" --body "Detailed description of change
 gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
 ```
 
+_merge requests with git_
+```bash
+git checkout <into-branch> #select the branch that will be merged into such as main or dev
+git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
+git merge <from-branch> #select the branch that will be merged into the current branch
+git push <upstream> <into-branch> #push the changes upstream that were merged
+```
+
 _other git commands_
 ```bash
 git status #gets the status of the working tree and any merges, particularly if there are any merge conflicts. To manually resolve, remove the conflict markers--preserving the desired changes, stage, and finally commit the merged changes
