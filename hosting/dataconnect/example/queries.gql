@@ -1,0 +1,45 @@
+mutation CreateDemoProject(
+    $demoUrl: String!,
+    $description: String,
+    $name: String!,
+    $thumbnailUrl: String,
+    $projectId: UUID!
+) @auth(level: USER) {
+    demo_insert(data: {
+        demoUrl: $demoUrl,
+        description: $description,
+        name: $name,
+        thumbnailUrl: $thumbnailUrl,
+        projectId: $projectId
+    })
+}
+
+query ListProjects @auth(level: PUBLIC, insecureReason: "This query is safe to expose publicly") {
+  projects {
+    id
+    title
+    description
+    imageUrl
+    projectUrl
+    githubRepoUrl
+    createdAt
+  }
+}
+
+mutation CreateCategory($name: String!) @auth(level: USER) {
+  category_insert(data: {name: $name})
+}
+
+query ListProfessionals @auth(level: PUBLIC, insecureReason: "This query is safe to expose publicly") {
+  professionals {
+    id
+    name
+    bio
+    email
+    githubUrl
+    linkedinUrl
+    portfolioUrl
+    profilePictureUrl
+    phoneNumber
+  }
+}
