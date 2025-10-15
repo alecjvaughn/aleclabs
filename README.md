@@ -1,18 +1,20 @@
 _initialize the repository_\
-prerequisites: ssh keygen and empty repo in github
+prerequisites: ssh keygen and empty repo in github\
+*origin* and *main* are the upstream repo and production branch, respectively
 ```bash
 git init <localdir> #initialize a repo with the .git directory
 touch README.md #create an empty file
 git add . #stage the changes from the working tree
 git commit -m "initial commit" #first commit
 git remote add origin git@github.com:<username>/<localdir>.git #adds the upstream url, must be valid
-git branch -u main #set the branch and create if none
+git branch -u main #set the branch locally and create if none, -u declares the upstream branch
 git push -u origin main #push the changes to <branch> upstream
 ```
 
 _commit procedure_\
 three areas exist (repo, index/staging area, working tree/directory)
 ```bash
+git checkout # select the context for the areas above
 git status # show the status of the work dir and index, including untracked files
 git add # stage the specified files for commit
 git restore [--staged] #undo specified changes to the work dir or to the index (with --staged)
@@ -34,10 +36,18 @@ gh pr create --title "Pull Request Title" --body "Detailed description of change
 gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
 ```
 
+_merge requests with git_
+```bash
+git checkout <into-branch> #select the branch that will be merged into such as main or dev
+git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
+git merge <from-branch> #select the branch that will be merged into the current branch
+git push <upstream> <into-branch> #push the changes upstream that were merged
+```
+
 _other git commands_
 ```bash
 git status #gets the status of the working tree
-git remote -v <alias> #gets the stored remote push/pull urls
-git remote remove <alias> #removes the declared upstream urls by alias
+git remote -v #gets the stored remote upstream urls
+git remote remove <upstream> #removes the declared upstream urls by alias
 git config -l #lists the stored config variables
 ```
