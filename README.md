@@ -28,6 +28,12 @@ git revert <commit-hash> #undo an already pushed commit and preserve its history
 git clean -ndxf #--n for dryrun, ommit to clean all directories and files from the working tree
 ```
 
+_Github CLI pull request (PR)_
+```bash
+gh pr create --title "Pull Request Title" --body "Detailed description of changes" --base main --head your-feature-branch #initiate the pull request
+gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
+```
+
 _other git commands_
 ```bash
 git status #gets the status of the working tree
