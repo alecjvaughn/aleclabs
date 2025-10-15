@@ -1,0 +1,36 @@
+type Professional @table {
+  name: String!
+  bio: String!
+  email: String!
+  phoneNumber: String
+  profilePictureUrl: String
+  linkedinUrl: String
+  githubUrl: String
+  portfolioUrl: String
+}
+
+type Project @table {
+  title: String!
+  description: String!
+  createdAt: Timestamp!
+  imageUrl: String
+  projectUrl: String
+  githubRepoUrl: String
+}
+
+type Category @table {
+  name: String!
+}
+
+type ProjectCategory @table(key: ["project", "category"]) {
+  project: Project!
+  category: Category!
+}
+
+type Demo @table {
+  name: String!
+  demoUrl: String!
+  description: String
+  thumbnailUrl: String
+  project: Project
+}
