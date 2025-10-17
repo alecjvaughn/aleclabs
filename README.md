@@ -1,3 +1,15 @@
+_create and deploy firebase project_\
+prerequisites: jdk (e.g. oracle jdk 25) required for local emulation
+```bash
+npm init @apphosting #creates the package.json in the root directory, in this case '/apphosting' with firebase scaffolding
+    # Not required:
+    # add the backend's configuration object (from SDK setup and configuration) to the app's entry point (main.js or index.js)
+    # store api key in an environment variable or firebase functions:secrets
+firebase init #makes this a firebase project, connects to a backend app, and optionally to github for triggered deployments
+firebase emulators:start #perform a local test
+firebase deploy #deploys a release from the live backend
+```
+
 _initialize the repository_\
 prerequisites: ssh keygen and empty repo in github\
 *origin* and *main* are the upstream repo and production branch, respectively
