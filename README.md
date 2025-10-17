@@ -12,7 +12,8 @@ firebase deploy #deploys a release from the live backend
 
 _initialize the repository_\
 prerequisites: ssh keygen and empty repo in github\
-*origin* and *main* are the upstream repo and production branch, respectively
+*origin* and *main* are the upstream repo and production branch, respectively\
+remote and upstream are used interchangably
 ```bash
 git init <localdir> #initialize a repo with the .git directory
 touch README.md #create an empty file
@@ -42,10 +43,13 @@ git revert <commit-hash> #undo an already pushed commit and preserve its history
 git clean -ndxf #--n for dryrun, ommit to clean all directories and files from the working tree
 ```
 
-_Github CLI pull request (PR)_
+_upstream procedure_\
+prerequisite: must commit any local changes
 ```bash
-gh pr create --title "Pull Request Title" --body "Detailed description of changes" --base main --head your-feature-branch #initiate the pull request
-gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
+git pull --rebase origin <branch> #pulls the last state of the (release) branch from upstream, --rebase is used when the working branch is deviated from upstream and tries to apply any local commits on top
+git add|rm #for any merged changes
+git rebase --continue|abort|skip #continues the rebase if used, or aborts, or skips the commit entirely
+git push [-u] origin <branch> #pushes the new changes to remote and -u sets the remote branch
 ```
 
 _merge requests with git_
@@ -54,6 +58,12 @@ git checkout <into-branch> #select the branch that will be merged into such as m
 git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
 git merge <from-branch> #select the branch that will be merged into the current branch
 git push <upstream> <into-branch> #push the changes upstream that were merged
+```
+
+_Github CLI pull request (PR)_
+```bash
+gh pr create --title "Pull Request Title" --body "Detailed description of changes" --base main --head your-feature-branch #initiate the pull request
+gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
 ```
 
 _other git commands_
