@@ -5,11 +5,17 @@
   "type": "module",
   "dependencies": {
     "@firecms/core": "^3.0.0-rc.3",
+    "@firecms/data_export": "^3.0.0-rc.3",
+    "@firecms/data_import": "^3.0.0-rc.3",
     "@firecms/editor": "^3.0.0-rc.3",
     "@firecms/firebase": "^3.0.0-rc.3",
+    "@firecms/collection_editor": "^3.0.0-rc.3",
+    "@firecms/collection_editor_firebase": "^3.0.0-rc.3",
     "@firecms/ui": "^3.0.0-rc.3",
+    "@firecms/user_management": "^3.0.0-rc.3",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "firebase": "^10",
+    "next": "^14.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^6",
@@ -17,10 +23,11 @@
     "typeface-rubik": "^1.1.13"
   },
   "scripts": {
-    "dev": "vite --mode development",
-    "build": "vite build && tsc",
-    "preview": "vite build && vite preview",
-    "deploy": "vite build && firebase deploy --only hosting --project aleclabs-website"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "next build && firebase deploy --only hosting --project aleclabs-website"
   },
   "browserslist": {
     "production": [
@@ -38,21 +45,12 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.21.0",
-    "@typescript-eslint/parser": "^8.21.0",
-    "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.12.0",
+    "eslint-config-next": "^14.2.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-n": "^17.11.1",
-    "eslint-plugin-promise": "^7.1.0",
-    "eslint-plugin-react": "^7.37.1",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.12",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5.7.3",
-    "vite": "^5.4.8",
-    "vite-plugin-svgr": "^4.2.0"
+    "typescript": "^5.7.3"
   }
 }
