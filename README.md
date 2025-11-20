@@ -112,6 +112,14 @@ gh pr create --title "Pull Request Title" --body "Detailed description of change
 gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
 ```
 
+>If you want to remove the "bad" commit altogether (and every commit that came after that), do a `git reset --hard ABC` (assuming ABC is the hash of the "bad" commit's elder sibling — the one you want to see as the new head commit of that branch). Then do a `git push --force` (or `git push -f`).
+>
+>If you just want to edit that commit, and preserve the commits that came after it, do a `git rebase -i ABC~`. This will launch your editor, showing the list of your commits, starting with the offending one. Change the flag from "pick" to "e", save the file and close the editor. Then make the necessary changes to the files, and do a `git commit -a --amend`, then do `git rebase --continue`. Follow it all up with a git push -f.
+>[stackoverflow](https://stackoverflow.com/questions/30893040/remove-commit-from-history)
+
+>[Removing sensitive data from a repository
+ - Github Docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
+
 _upstream procedure_\
 prerequisite: must commit any local changes
 ```bash
@@ -123,7 +131,7 @@ git push [-u] origin <branch> #pushes the new changes to remote and -u sets the 
 
 _merge requests with git_
 ```bash
-git checkout <into-branch> #select the branch that will be merged into such as main or dev
+git checkout [-b] <into-branch> #select the branch that will be merged into such as main or dev, -b allows for creation of new branch
 git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
 git merge <from-branch> #select the branch that will be merged into the current branch
 git push <upstream> <into-branch> #push the changes upstream that were merged
