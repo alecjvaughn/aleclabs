@@ -1,31 +1,21 @@
 _create firecms app_\
 ```bash
-yarn create firecms-app # Must create in empty directory
-    # FireCMS Community
-    # select Firebase project (aleclabs-website)
-    # choose defaults (root: my-cms, no git init)
-cd my-cms # default root dir
-echo .yarn > .gitignore # safe to commit
-yarn add firebase@^10 @firecms/core@^3.0.0-rc.3 @firecms/firebase@^3.0.0-rc.3 @firecms/ui@^3.0.0-rc.3 @firecms/editor@^3.0.0-rc.3 react-router@^6 react-router-dom@^6 @tailwindcss/typography typeface-rubik @fontsource/jetbrains-mono 
-    # install deps for FireCMS Community and Next.js frontend (Quickstart)^^^
-    #
-    # for FireCMS PRO + Next.js frontend
-    # ? Please choose a version of "@firecms/collection_editor" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/collection_editor_firebase" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/core" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/data_enhancement" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/data_export" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/data_import" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/editor" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/firebase" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/schema_inference" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/ui" from this list: 3.0.0-rc.3
-    # ? Please choose a version of "@firecms/user_management" from this list: 3.0.0-rc.3
+yarn create firecms-app # Scaffolds the backend CMS
+    # Scaffolding must use an empty directory to run (not the git base directory)
+        # FireCMS Community
+        # select Firebase project (aleclabs-website)
+        # choose defaults (root directory: my-cms, no git init)
+cd my-cms # default root directory
+echo .yarn > .gitignore 
+    # safe to commit
+yarn add firebase@^10 @firecms/core@^3.0.0-rc.3 @firecms/firebase@^3.0.0-rc.3 @firecms/ui@^3.0.0-rc.3 @firecms/editor@^3.0.0-rc.3 react-router@^6 react-router-dom@^6 @tailwindcss/typography typeface-rubik @fontsource/jetbrains-mono # install deps for FireCMS Community and Next.js frontend (Quickstart)
 yarn dev # test locally
 firebase init #makes this a firebase project, connects to a backend app, and optionally to github for triggered deployments
     # adds .firebaserc, .gitignore, apphosting.yaml, and firebase.json
-firebase emulators:start # perform a local test of firebase
-npx create-next-app@latest # git rm -r on ./public and ./src and recreate src (app should be installed in empty src directory)
+firebase emulators:start # perform a local test of firebase (runs yarn dev for this project)
+    # if working, safe to commit
+npx create-next-app@latest # scaffolds the Next.js frontend
+    # git rm -r on ./public and ./src and recreate src (app should be installed in empty src directory)
 # These files were removed:
     # my-cms/public/
     # my-cms/src/
@@ -34,11 +24,13 @@ npx create-next-app@latest # git rm -r on ./public and ./src and recreate src (a
     # .next and node_modules should also be removed from the ./src directory and regenerated in the root directory
     # merge the inner .gitignore with the root .gitignore
 # These files were modified:
-    # modified:   my-cms/.gitignore
-    # modified:   my-cms/package.json
     # modified:   my-cms/tailwind.config.js
+    # modified:   my-cms/package.json
     # modified:   my-cms/tsconfig.json
     # modified:   my-cms/yarn.lock
+    # modified:   my-cms/.gitignore
+# Follow the Quickstart + Next.js tutorial to create the frontend and CMS
+# Add your backend Firebase config to the src/app/cms/FireCMSApp.tsx file
 ```
 
 _deploy firebase project_\
