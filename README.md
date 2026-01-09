@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 _create firecms app_\
 ```bash
 yarn create firecms-app # Scaffolds the backend CMS
@@ -37,7 +36,7 @@ npx create-next-app@latest # scaffolds the Next.js frontend
 _deploy firebase project_\
 prerequisites: jdk (e.g. oracle jdk 25) required for local emulation
 ```bash
-firebase emulators:start #perform a local test
+firebase emulators:start #perform a local test || `yarn dev` || `npm run dev`
 firebase deploy #deploys a release from the live backend
 ```
 
@@ -112,37 +111,6 @@ gh pr create --title "Pull Request Title" --body "Detailed description of change
 gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
 ```
 
->If you want to remove the "bad" commit altogether (and every commit that came after that), do a `git reset --hard ABC` (assuming ABC is the hash of the "bad" commit's elder sibling — the one you want to see as the new head commit of that branch). Then do a `git push --force` (or `git push -f`).
->
->If you just want to edit that commit, and preserve the commits that came after it, do a `git rebase -i ABC~`. This will launch your editor, showing the list of your commits, starting with the offending one. Change the flag from "pick" to "e", save the file and close the editor. Then make the necessary changes to the files, and do a `git commit -a --amend`, then do `git rebase --continue`. Follow it all up with a git push -f.
->[stackoverflow](https://stackoverflow.com/questions/30893040/remove-commit-from-history)
-
->[Removing sensitive data from a repository
- - Github Docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
-
-_upstream procedure_\
-prerequisite: must commit any local changes
-```bash
-git pull --rebase origin <branch> #pulls the last state of the (release) branch from upstream, --rebase is used when the working branch is deviated from upstream and tries to apply any local commits on top
-git add|rm #for any merged changes
-git rebase --continue|abort|skip #continues the rebase if used, or aborts, or skips the commit entirely
-git push [-u] origin <branch> #pushes the new changes to remote and -u sets the remote branch
-```
-
-_merge requests with git_
-```bash
-git checkout [-b] <into-branch> #select the branch that will be merged into such as main or dev, -b allows for creation of new branch
-git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
-git merge <from-branch> #select the branch that will be merged into the current branch
-git push <upstream> <into-branch> #push the changes upstream that were merged
-```
-
-_Github CLI pull request (PR)_
-```bash
-gh pr create --title "Pull Request Title" --body "Detailed description of changes" --base main --head your-feature-branch #initiate the pull request
-gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
-```
-
 _other git commands_
 ```bash
 git status #gets the status of the working tree and any merges, particularly if there are any merge conflicts. To manually resolve, remove the conflict markers--preserving the desired changes, stage, and finally commit the merged changes
@@ -150,5 +118,3 @@ git remote -v #gets the stored remote upstream urls
 git remote remove <upstream> #removes the declared upstream urls by alias
 git config -l #lists the stored config variables
 ```
-=======
->>>>>>> 41e74924 (Revert "update README.md")
