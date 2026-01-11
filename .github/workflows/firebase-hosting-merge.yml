@@ -11,9 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './my-cms/package-lock.json'
       - run: npm ci && npm run build
+        working-directory: ./my-cms
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
+          entryPoint: .
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE }}
           channelId: live
