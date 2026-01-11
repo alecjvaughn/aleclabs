@@ -1,9 +1,12 @@
+# Misc
+.DS_Store
+*.pem
+
 # Logs
 logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+.pnpm-debug.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
@@ -44,8 +47,22 @@ bower_components
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+# Production build
+build/
+
 # Dependency directories
 node_modules/
+
+# Next.js
+.next/
+out/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Optional npm cache directory
 .npm
@@ -59,11 +76,8 @@ node_modules/
 # Output of 'npm pack'
 *.tgz
 
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
+# Environment variables
+.env*
 
 # dataconnect generated files
 .dataconnect
