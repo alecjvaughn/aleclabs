@@ -12,6 +12,8 @@ yarn add firebase@^10 @firecms/core@^3.0.0-rc.3 @firecms/firebase@^3.0.0-rc.3 @f
 yarn dev # test locally
 firebase init #makes this a firebase project, connects to a backend app, and optionally to github for triggered deployments
     # adds .firebaserc, .gitignore, apphosting.yaml, and firebase.json
+    # Note: The GitHub Action service account requires the "Secret Manager Secret Accessor" role.
+    # gcloud projects add-iam-policy-binding aleclabs-website --member="serviceAccount:YOUR_SA_EMAIL" --role="roles/secretmanager.secretAccessor"
 firebase emulators:start # perform a local test of firebase (runs yarn dev for this project)
     # if working, safe to commit
 npx create-next-app@latest # scaffolds the Next.js frontend
