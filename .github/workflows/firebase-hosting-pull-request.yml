@@ -40,7 +40,7 @@ jobs:
       # Deploys the built artifacts to a preview channel on Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          entryPoint: ./my-cms
+          entryPoint: .
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE }}
           projectId: aleclabs-website
