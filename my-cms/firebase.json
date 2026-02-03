@@ -1,9 +1,4 @@
 {
-  "_comment": [
-    "Configures Firebase Hosting (Classic/Static) with the property 'hosting'.",
-    "Justification: Used by the Firebase CLI for manual deployments or static site hosting.",
-    "Dependency: Depends on the build output directory (e.g., 'build' or '.next')."
-  ],
   "hosting": {
   "public": "build",
   "site": "aleclabs-website",
