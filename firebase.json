@@ -1,4 +1,9 @@
 {
+  "_comment": [
+    "Configures Firebase App Hosting (Container-based) with the property 'apphosting'.",
+    "Justification: Required for App Hosting to locate the app source in a monorepo structure.",
+    "Dependency: Requires the 'my-cms' directory to exist."
+  ],
   "apphosting": {
     "backendId": "my-app-backend",
     "rootDir": "my-cms",

@@ -35,15 +35,13 @@ import { useExportPlugin } from "@firecms/data_export";
 import { useBuildUserManagement, userManagementAdminViews, useUserManagementPlugin } from "@firecms/user_management";
 import { useFirestoreCollectionsConfigController } from "@firecms/collection_editor_firebase";
 import { mergeCollections, useCollectionEditorPlugin } from "@firecms/collection_editor";
+import { firebaseConfig as baseConfig } from "../../firebase_config";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
-  authDomain: "aleclabs-website.firebaseapp.com",
-  projectId: "aleclabs-website",
-  storageBucket: "aleclabs-website.firebasestorage.app",
-  messagingSenderId: "670714987285",
+  ...baseConfig,
+  // Overriding some values for this demo app
   appId: "1:670714987285:web:07bbedb6916bcfcadddf1c",
   measurementId: "G-LDR3G4XXT7"
 };

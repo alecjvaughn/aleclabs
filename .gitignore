@@ -81,3 +81,12 @@ next-env.d.ts
 
 # dataconnect generated files
 .dataconnect
+
+# secret abstractions
+.secrets
+.env
+.env.local
+.env.*.local
+service-account-key.json
+firebase-debug.log
+
