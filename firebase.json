@@ -4,6 +4,14 @@
     "Justification: Required for App Hosting to locate the app source in a monorepo structure.",
     "Dependency: Requires the 'my-cms' directory to exist."
   ],
+    "hosting": {
+    "source": "my-cms",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
   "apphosting": {
     "backendId": "my-app-backend",
     "rootDir": "my-cms",
