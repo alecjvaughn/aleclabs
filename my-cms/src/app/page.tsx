@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-32 px-16 bg-zinc-50 dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-4xl flex-col items-center justify-between py-12 px-6 md:py-32 md:px-16 bg-zinc-50 dark:bg-black">
         <header>
           <div className="flex justify-center mb-8">
             <Image
@@ -29,18 +29,18 @@ export default function Home() {
             </div>
           </div>
         </header>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Summary</h2>
-          <div className="section-content w-4/5">
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Summary</h2>
+          <div className="section-content w-full md:w-4/5">
             <p>
               Software Engineer & Technical Lead Certified GenAI Associate Engineer with 4 years of experience building technical solutions for enterprise security environments. Specializes in bridging the gap between complex backend data and intuitive User Interfaces. Proficient in JavaScript (React/Next.js) and Python, with deep domain expertise in Incident Response, SOC Compliance, and Cloud Infrastructure. Eager to apply a security-first mindset to build scalable, high-performance frontends for CrowdStrike’s Intelligence team.
             </p>
           </div>
         </section>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Core Skills</h2>
-          <div className="section-content w-4/5">
-            <ul>
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Core Skills</h2>
+          <div className="section-content w-full md:w-4/5">
+            <ul className="list-disc list-outside ml-5 space-y-2">
               <li>Front-End &amp; Web: React, Next.js, JavaScript (ES6+), HTML5/CSS3, Tailwind CSS, Firebase (Hosting/DB), RESTful APIs, JSON.</li>
               <li>Backend &amp; Scripting: Python, SQL, Bash/Shell, Node.js concepts.</li>
               <li>Cloud &amp; Infrastructure: Microsoft Azure (Specialist – AZ-120), Cloud Data Services, CI/CD (GitLab/Jenkins).</li>
@@ -48,13 +48,13 @@ export default function Home() {
             </ul>
           </div>
         </section>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Professional Experience</h2>
-          <div className="section-content w-4/5">
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Professional Experience</h2>
+          <div className="section-content w-full md:w-4/5">
             <div className="job">
               <div className="job-header">HCLTech / SEAL Consulting (Lumen Engagement) | Sep 2021 – Nov 2025</div>
               <div className="job-role">Lead Consultant / Software &amp; Automation Engineer</div>
-              <ul>
+              <ul className="list-disc list-outside ml-5 space-y-2">
                 <li>Automation Engineering: Engineered a custom Python automation suite using the Azure SDK to modernize legacy system health checks (HANA Minichecks), reducing manual diagnostic time by 20% and centralizing critical threat notifications.</li>
                 <li>Data Pipeline Optimization: Leveraged Azure Databricks and SQL to architect complex queries against large system logs, identifying usage patterns and cost-saving opportunities through complex table joins.</li>
                 <li>Generative AI Implementation: Applied Generative AI principles (RAG concepts) and LangChain workflows to design experimental scripts for parsing unstructured technical logs into structured data for analysis.</li>
@@ -66,7 +66,7 @@ export default function Home() {
             <div className="job">
               <div className="job-header">Goodman Telecom Services | Aug 2019 – Aug 2021</div>
               <div className="job-role">OSP Engineering Associate II</div>
-              <ul>
+              <ul className="list-disc list-outside ml-5 space-y-2">
                 <li>API Integration: Developed Python scripts utilizing the Google Maps API to automate the extraction of geospatial coordinate data, translating unstructured survey metrics into precise engineering documents.</li>
                 <li>Data Visualization: Designed and deployed interactive executive dashboards in Dynamics 365, consolidating real-time project metrics to provide leadership with actionable portfolio insights.</li>
                 <li>Tool Optimization: Evaluated open-source GIS tools against proprietary software to optimize engineering workflows, conducting technical feasibility analysis to improve data processing efficiency.</li>
@@ -75,7 +75,7 @@ export default function Home() {
             <div className="job">
               <div className="job-header">Preventice Solutions | Dec 2018 – May 2019</div>
               <div className="job-role">DevOps Engineer</div>
-              <ul>
+              <ul className="list-disc list-outside ml-5 space-y-2">
                 <li>Cloud Migration: Orchestrated the migration of legacy version control systems to Azure DevOps (Git), standardizing toolsets and enabling modern CI/CD workflows for the development team.</li>
                 <li>Pipeline Automation: Refactored PowerShell triggers for Continuous Delivery pipelines, automating environment builds on Windows Server 2012 to reduce deployment friction and configuration drift.</li>
                 <li>Infrastructure Analysis: Evaluated Virtual Machine Scale Sets (VMSS) and Infrastructure-as-Code (IaC) templates to standardize scalable cloud deployments and improve system resilience.</li>  
@@ -83,13 +83,13 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Technical Projects</h2>
-          <div className="section-content w-4/5">
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Technical Projects</h2>
+          <div className="section-content w-full md:w-4/5">
             <div className="job">
               <div className="job-header">Personal Portfolio & Web Lab | 2026</div>
               <div className="job-role">Role: Full Stack Developer</div>
-              <ul>
+              <ul className="list-disc list-outside ml-5 space-y-2">
                 <li>Architecture: Designed and deployed a responsive Single Page Application (SPA) using Next.js and React.</li>
                 <li>Cloud Integration: Integrated Firebase for backend database and hosting, ensuring scalable performance.</li>
                 <li>UI/UX: Implemented modern CSS frameworks to create an intuitive, accessible user interface for showcasing engineering projects.</li>
@@ -98,18 +98,18 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Education</h2>
-          <div className="section-content w-4/5">
-            <ul>
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Education</h2>
+          <div className="section-content w-full md:w-4/5">
+            <ul className="list-disc list-outside ml-5 space-y-2">
               <li>Winona State University – Bachelor of Science, Computer Sciences (May 2018, Cum Laude).</li>
             </ul>
           </div>
         </section>
-        <section className="w-full">
-          <h2 className="w-1/5 shrink-0 mr-0 pr-8">Certifications</h2>
-          <div className="section-content w-4/5">
-            <ul>
+        <section className="w-full flex flex-col md:flex-row gap-4 md:gap-0">
+          <h2 className="w-full md:w-1/5 shrink-0 md:pr-8">Certifications</h2>
+          <div className="section-content w-full md:w-4/5">
+            <ul className="list-disc list-outside ml-5 space-y-2">
               <li>Certified GenAI Associate Engineer | July 2025</li>
               <li>Microsoft Certified: Azure for SAP Workloads Specialty | November 2024</li>
               <li>Lean Six Sigma White Belt | July 2024</li>
