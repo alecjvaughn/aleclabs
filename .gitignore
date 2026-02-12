@@ -91,3 +91,8 @@ service-account-key.json
 firebase-debug.log
 
 _temp_/
+infrastructure/secrets/
+infrastructure/.terraform/
+infrastructure/*terraform.*
+
+
