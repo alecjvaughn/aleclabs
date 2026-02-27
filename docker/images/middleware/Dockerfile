@@ -10,8 +10,5 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# 3. Environment Configuration
-ENV NODE_ENV=production
-
 # 5. Security Handoff
 USER secureuser

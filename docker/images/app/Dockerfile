@@ -23,6 +23,7 @@ RUN npm run build
 # 5. Runtime Configuration
 # Cloud Run injects the PORT env var (defaults to 8080)
 ENV PORT=8080
+ENV NODE_ENV=production
 EXPOSE 8080
 
 # 6. Entrypoint

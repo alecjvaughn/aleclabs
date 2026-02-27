@@ -1,79 +1,71 @@
-# Variables
+# --- Configuration ---
 TF_DIR := infrastructure
 APP_NAME := production_service
-APP_IMAGE := local/my-app:latest
-MIDDLEWARE_IMAGE := local/node_middleware:latest
-ROOT_IMAGE := local/root_base:latest
 PORT := 8080
 
-.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild clean-all ansible-deploy
+# Docker Images
+ROOT_IMAGE := local/root_base:latest
+MIDDLEWARE_IMAGE := local/node_middleware:latest
+APP_IMAGE := local/my-app:latest
+
+# Docker Files
+ROOT_DOCKERFILE := docker/images/root/Dockerfile
+MIDDLEWARE_DOCKERFILE := docker/images/middleware/Dockerfile
+APP_DOCKERFILE := docker/images/app/Dockerfile
+
+# --- Main Targets ---
+.PHONY: help up down reload logs
+.PHONY: tf-init tf-apply tf-destroy tf-clean
+.PHONY: docker-up docker-down docker-build docker-rebuild docker-clean
+.PHONY: clean clean-deps clean-install clean-all
+.PHONY: ansible-deploy
 
 help:
 	@echo "Usage:"
-	@echo "  make up          : Start the application using Terraform (Preferred)"
-	@echo "  make down        : Destroy infrastructure and clean up images"
-	@echo "  make reload      : Rebuild the app image and restart (Terraform)"
-	@echo "  make tf-clean    : Remove Terraform state and lock files"
-	@echo "  make logs        : View container logs"
-	@echo "  make docker-up   : Build and run using Docker commands (Alternative)"
-	@echo "  make docker-down : Stop and remove Docker container"
-	@echo "  make docker-rebuild : Force rebuild of Docker images (no cache)"
-	@echo "  make clean-install : Clean node_modules and reinstall dependencies"
-	@echo "  make clean-all   : Totally clean the environment (Docker, Terraform, node_modules)"
-	@echo "  make ansible-deploy : Deploy and verify using Ansible orchestration"
+	@echo "  make up             : Deploy application using Terraform (Preferred)"
+	@echo "  make down           : Destroy infrastructure and cleanup"
+	@echo "  make reload         : Rebuild and redeploy app image via Terraform"
+	@echo "  make logs           : View container logs (Local Docker)"
+	@echo "  make clean          : Remove Next.js build artifacts (.next)"
+	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
+	@echo "  make ansible-deploy : Deploy using Ansible"
 
-# --- Terraform Workflow (Preferred) ---
+# --- Terraform Workflow ---
 
 tf-init:
 	cd $(TF_DIR) && terraform init
 
-up: tf-init
+tf-apply: tf-init
 	cd $(TF_DIR) && terraform apply -auto-approve
 
-# Thorough cleanup: Destroy resources and ensure images are removed
-down:
+tf-destroy:
 	cd $(TF_DIR) && terraform destroy -auto-approve
+
+tf-clean:
+	rm -rf $(TF_DIR)/.terraform $(TF_DIR)/.terraform.lock.hcl $(TF_DIR)/terraform.tfstate $(TF_DIR)/terraform.tfstate.backup
+
+up: tf-apply
+
+down: tf-destroy
 	@echo "Cleaning up any dangling images..."
 	-docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) 2>/dev/null || true
 	-docker network rm data_platform_network 2>/dev/null || true
 
-# Remove Terraform state, locks, and cached plugins for a fresh start
-tf-clean:
-	rm -rf $(TF_DIR)/.terraform $(TF_DIR)/.terraform.lock.hcl $(TF_DIR)/terraform.tfstate $(TF_DIR)/terraform.tfstate.backup
-
-# Clean node_modules and reinstall dependencies locally
-clean-install:
-	rm -rf node_modules package-lock.json
-	npm install
-
-# Totally clean the environment: Stop containers, destroy infra, clean state, and remove local deps
-clean-all: docker-down down tf-clean
-	rm -rf node_modules package-lock.json
-	@echo "Environment totally cleaned."
-
-# --- Ansible Workflow ---
-ansible-deploy:
-	ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
-
-# Force rebuild of the application image without destroying network/base images
 reload:
 	cd $(TF_DIR) && terraform taint docker_image.my_app
 	cd $(TF_DIR) && terraform apply -auto-approve
 
-logs:
-	docker logs -f $(APP_NAME)
-
-# --- Docker Manual Workflow (Alternative) ---
+# --- Docker Manual Workflow ---
 
 docker-build:
-	docker build -t $(ROOT_IMAGE) -f docker/images/root/Dockerfile .
-	docker build -t $(MIDDLEWARE_IMAGE) -f docker/images/middleware/Dockerfile .
-	docker build -t $(APP_IMAGE) -f docker/images/app/Dockerfile .
+	docker build -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
+	docker build -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
+	docker build -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
 
 docker-rebuild:
-	docker build --no-cache -t $(ROOT_IMAGE) -f docker/images/root/Dockerfile .
-	docker build --no-cache -t $(MIDDLEWARE_IMAGE) -f docker/images/middleware/Dockerfile .
-	docker build --no-cache -t $(APP_IMAGE) -f docker/images/app/Dockerfile .
+	docker build --no-cache -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
+	docker build --no-cache -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
+	docker build --no-cache -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
 
 docker-run: docker-build
 	docker run --rm -d --name $(APP_NAME) \
@@ -93,3 +85,25 @@ docker-down:
 
 docker-clean: docker-down
 	docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) || true
+
+# --- Utility & Cleanup ---
+
+logs:
+	docker logs -f $(APP_NAME)
+
+clean-artifacts:
+	rm -rf .next
+
+clean-deps:
+	rm -rf node_modules package-lock.json
+
+clean-install: clean-artifacts clean-deps
+	npm install
+
+clean-all: docker-down down tf-clean clean-artifacts clean-deps
+	@echo "Environment totally cleaned."
+
+# --- Ansible ---
+
+ansible-deploy:
+	ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
