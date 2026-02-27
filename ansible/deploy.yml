@@ -6,7 +6,6 @@
     # Define paths relative to this playbook
     project_root: "{{ playbook_dir }}/.."
     tf_dir: "{{ project_root }}/infrastructure"
-    app_url: "http://localhost:8080"
 
   tasks:
     - name: Pre-flight | Check if Docker Daemon is running
@@ -48,9 +47,16 @@
       debug:
         var: make_up.stdout_lines
 
+    - name: Infrastructure | Get Application URL
+      command: terraform output -raw application_url
+      args:
+        chdir: "{{ tf_dir }}"
+      register: tf_output
+      changed_when: false
+
     - name: Verification | Wait for Next.js App to be Healthy
       uri:
-        url: "{{ app_url }}"
+        url: "{{ tf_output.stdout }}"
         method: GET
         status_code: 200
       register: health_check
