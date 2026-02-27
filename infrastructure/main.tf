@@ -8,8 +8,8 @@ resource "docker_image" "root_base" {
 }
 
 # 2. Build the Intermediate Image (Level 2)
-resource "docker_image" "python_middleware" {
-  name = "local/python_middleware:latest"
+resource "docker_image" "node_middleware" {
+  name = "local/node_middleware:latest"
   build {
     context    = ".."
     dockerfile = "/docker/images/middleware/Dockerfile"
@@ -26,7 +26,7 @@ resource "docker_image" "my_app" {
     dockerfile = "/docker/images/app/Dockerfile"
   }
   # Ensure Middleware is built first
-  depends_on = [docker_image.python_middleware]
+  depends_on = [docker_image.node_middleware]
 }
 
 # Define the network resource referenced by the container

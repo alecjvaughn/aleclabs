@@ -2,11 +2,11 @@
 TF_DIR := infrastructure
 APP_NAME := production_service
 APP_IMAGE := local/my-app:latest
-MIDDLEWARE_IMAGE := local/python_middleware:latest
+MIDDLEWARE_IMAGE := local/node_middleware:latest
 ROOT_IMAGE := local/root_base:latest
 PORT := 8080
 
-.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild
+.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild clean-all
 
 help:
 	@echo "Usage:"
@@ -19,6 +19,7 @@ help:
 	@echo "  make docker-down : Stop and remove Docker container"
 	@echo "  make docker-rebuild : Force rebuild of Docker images (no cache)"
 	@echo "  make clean-install : Clean node_modules and reinstall dependencies"
+	@echo "  make clean-all   : Totally clean the environment (Docker, Terraform, node_modules)"
 
 # --- Terraform Workflow (Preferred) ---
 
@@ -43,6 +44,11 @@ tf-clean:
 clean-install:
 	rm -rf node_modules package-lock.json
 	npm install
+
+# Totally clean the environment: Stop containers, destroy infra, clean state, and remove local deps
+clean-all: docker-down down tf-clean
+	rm -rf node_modules package-lock.json
+	@echo "Environment totally cleaned."
 
 # Force rebuild of the application image without destroying network/base images
 reload:

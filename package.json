@@ -1,5 +1,15 @@
 {
+  "name": "aleclabs-bbc",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "firebase": "^12.9.0"
+    "firebase": "^12.9.0",
+    "next": "^16.1.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
