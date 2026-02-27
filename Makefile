@@ -6,7 +6,7 @@ MIDDLEWARE_IMAGE := local/node_middleware:latest
 ROOT_IMAGE := local/root_base:latest
 PORT := 8080
 
-.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild clean-all
+.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild clean-all ansible-deploy
 
 help:
 	@echo "Usage:"
@@ -20,6 +20,7 @@ help:
 	@echo "  make docker-rebuild : Force rebuild of Docker images (no cache)"
 	@echo "  make clean-install : Clean node_modules and reinstall dependencies"
 	@echo "  make clean-all   : Totally clean the environment (Docker, Terraform, node_modules)"
+	@echo "  make ansible-deploy : Deploy and verify using Ansible orchestration"
 
 # --- Terraform Workflow (Preferred) ---
 
@@ -49,6 +50,10 @@ clean-install:
 clean-all: docker-down down tf-clean
 	rm -rf node_modules package-lock.json
 	@echo "Environment totally cleaned."
+
+# --- Ansible Workflow ---
+ansible-deploy:
+	ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
 
 # Force rebuild of the application image without destroying network/base images
 reload:
@@ -84,6 +89,7 @@ docker-up: docker-run
 docker-down:
 	docker stop $(APP_NAME) || true
 	docker rm $(APP_NAME) || true
+	docker network rm data_platform_network || true
 
 docker-clean: docker-down
 	docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) || true
