@@ -29,6 +29,7 @@ help:
 	@echo "  make clean          : Remove Next.js build artifacts (.next)"
 	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
 	@echo "  make ansible-deploy : Deploy using Ansible"
+	@echo "  make deploy-hosting : Deploy to Firebase Hosting"
 
 # --- Terraform Workflow ---
 
@@ -53,6 +54,8 @@ down: tf-destroy
 
 reload:
 	cd $(TF_DIR) && terraform taint docker_image.my_app
+	cd $(TF_DIR) && terraform taint docker_image.node_middleware
+	cd $(TF_DIR) && terraform taint docker_image.root_base
 	cd $(TF_DIR) && terraform apply -auto-approve
 
 # --- Docker Manual Workflow ---
@@ -86,13 +89,18 @@ docker-down:
 docker-clean: docker-down
 	docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) || true
 
+# --- Firebase Workflow ---
+
+deploy-hosting:
+	firebase deploy --only hosting
+
 # --- Utility & Cleanup ---
 
 logs:
 	docker logs -f $(APP_NAME)
 
 clean-artifacts:
-	rm -rf .next
+	rm -rf .next .firebase
 
 clean-deps:
 	rm -rf node_modules package-lock.json
@@ -102,6 +110,9 @@ clean-install: clean-artifacts clean-deps
 
 clean-all: docker-down down tf-clean clean-artifacts clean-deps
 	@echo "Environment totally cleaned."
+	@echo "Running 'npm install' to reset dependencies..."
+	npm install
+	@echo "Done."
 
 # --- Ansible ---
 

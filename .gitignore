@@ -4,6 +4,7 @@
 .pnp.js
 
 # testing
+/_temp_/
 /coverage
 
 # next.js
@@ -36,3 +37,6 @@ yarn-error.log*
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
+
+# firebase
+.firebase/

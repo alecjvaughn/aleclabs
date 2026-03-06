@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: 'AlecLabs App',
-  description: 'Next.js Skeleton App',
+  description: 'Next.js Resume Basic Template',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -19,6 +19,7 @@ Ensure you have the following installed locally:
 - **Terraform** (v1.0+)
 - **Ansible**
 - **Google Cloud SDK** (`gcloud`)
+- **Firebase CLI** (`npm install -g firebase-tools`)
 
 ## 💻 Local Development
 
@@ -37,17 +38,24 @@ The app will be available at http://localhost:8080.
 
 ## ☁️ Deployment
 
-This project uses Terraform to provision infrastructure on Google Cloud Platform.
+This project uses Terraform to provision infrastructure (Cloud Run) and Firebase Hosting for the frontend delivery.
 
-1.  **Authenticate with GCP:**
+1.  **Authenticate:**
     ```bash
     gcloud auth application-default login
+    firebase login
     ```
 
-2.  **Deploy via Ansible (Recommended):**
-    This runs pre-flight checks, Terraform apply, and health verification.
+2.  **Deploy Infrastructure (Cloud Run):**
+    This runs pre-flight checks, Terraform apply, and health verification for the backend service.
     ```bash
     make ansible-deploy
+    ```
+
+3.  **Deploy Hosting (Firebase):**
+    This uploads your static assets and configures the rewrite rules to point to Cloud Run.
+    ```bash
+    make deploy-hosting
     ```
 
 ## 🕹 Command Reference
@@ -58,3 +66,4 @@ This project uses Terraform to provision infrastructure on Google Cloud Platform
 | `make down` | Destroy infrastructure and cleanup. |
 | `make clean-all` | Full environment reset (Terraform, Docker, Node). |
 | `make ansible-deploy` | Orchestrate deployment with Ansible. |
+| `make deploy-hosting` | Deploy static assets and config to Firebase Hosting. |
