@@ -18,6 +18,18 @@ resource "google_project_service" "cloud_run" {
   disable_on_destroy = false
 }
 
+# Enable Firebase API
+resource "google_project_service" "firebase" {
+  service            = "firebase.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable Firebase Hosting API
+resource "google_project_service" "firebase_hosting" {
+  service            = "firebasehosting.googleapis.com"
+  disable_on_destroy = false
+}
+
 # Create Artifact Registry Repository
 resource "google_artifact_registry_repository" "app_repo" {
   location      = var.region
@@ -101,4 +113,29 @@ resource "google_cloud_run_v2_service_iam_member" "public" {
 
 output "application_url" {
   value = google_cloud_run_v2_service.default.uri
+}
+
+# # Deploy Firebase Hosting on every apply
+# resource "null_resource" "firebase_deploy" {
+#   triggers = {
+#     always_run = "${timestamp()}"
+#   }
+
+#   provisioner "local-exec" {
+#     command     = "firebase deploy --only hosting"
+#     working_dir = "${path.module}/.."
+#   }
+
+#   depends_on = [google_cloud_run_v2_service.default]
+# }
+
+# Disable Firebase Hosting only when destroying the infrastructure
+resource "null_resource" "firebase_cleanup" {
+  provisioner "local-exec" {
+    when        = destroy
+    command     = "firebase hosting:disable --confirm"
+    working_dir = "${path.module}/.."
+  }
+
+  depends_on = [google_project_service.firebase_hosting]
 }

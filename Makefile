@@ -18,6 +18,7 @@ APP_DOCKERFILE := docker/images/app/Dockerfile
 .PHONY: tf-init tf-apply tf-destroy tf-clean
 .PHONY: docker-up docker-down docker-build docker-rebuild docker-clean
 .PHONY: clean clean-deps clean-install clean-all
+.PHONY: clean-cloud-images
 .PHONY: ansible-deploy
 
 help:
@@ -28,6 +29,7 @@ help:
 	@echo "  make logs           : View container logs (Local Docker)"
 	@echo "  make clean          : Remove Next.js build artifacts (.next)"
 	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
+	@echo "  make clean-cloud-images : Delete all images in Artifact Registry"
 	@echo "  make ansible-deploy : Deploy using Ansible"
 	@echo "  make deploy-hosting : Deploy to Firebase Hosting"
 
@@ -51,6 +53,7 @@ down: tf-destroy
 	@echo "Cleaning up any dangling images..."
 	-docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) 2>/dev/null || true
 	-docker network rm data_platform_network 2>/dev/null || true
+	@echo "Note: Run 'firebase hosting:disable' manually to remove the frontend site."
 
 reload:
 	cd $(TF_DIR) && terraform taint docker_image.my_app
@@ -113,6 +116,13 @@ clean-all: docker-down down tf-clean clean-artifacts clean-deps
 	@echo "Running 'npm install' to reset dependencies..."
 	npm install
 	@echo "Done."
+
+clean-hosting:
+	# Delete all images in the repository (requires confirmation)
+	gcloud artifacts docker images delete \
+		us-central1-docker.pkg.dev/aleclabs-website/nextjs-repo/my-app \
+		--delete-tags
+	firebase hosting:disable
 
 # --- Ansible ---
 
