@@ -1,0 +1,65 @@
+---
+- name: Orchestrate Local Deployment
+  hosts: local
+  gather_facts: no
+  vars:
+    # Define paths relative to this playbook
+    project_root: "{{ playbook_dir }}/.."
+    tf_dir: "{{ project_root }}/infrastructure"
+
+  tasks:
+    - name: Pre-flight | Check if Docker Daemon is running
+      command: docker info
+      changed_when: false
+      register: docker_check
+      failed_when: docker_check.rc != 0
+
+    - name: Pre-flight | Cleanup via Make
+      command: make docker-down
+      args:
+        chdir: "{{ project_root }}"
+      register: make_down
+      changed_when: false
+
+    - name: Output | Cleanup Results
+      debug:
+        var: make_down.stdout_lines
+
+    - name: Infrastructure | Initialize Terraform
+      command: terraform init
+      args:
+        chdir: "{{ tf_dir }}"
+      register: tf_init
+      changed_when: false
+
+    - name: Output | Terraform Init Results
+      debug:
+        var: tf_init.stdout_lines
+
+    - name: Infrastructure | Deploy via Make
+      command: make up
+      args:
+        chdir: "{{ project_root }}"
+      register: make_up
+      changed_when: "'Apply complete' in make_up.stdout and '0 added, 0 changed, 0 destroyed' not in make_up.stdout"
+
+    - name: Output | Deploy Results
+      debug:
+        var: make_up.stdout_lines
+
+    - name: Infrastructure | Get Application URL
+      command: terraform output -raw application_url
+      args:
+        chdir: "{{ tf_dir }}"
+      register: tf_output
+      changed_when: false
+
+    - name: Verification | Wait for Next.js App to be Healthy
+      uri:
+        url: "{{ tf_output.stdout }}"
+        method: GET
+        status_code: 200
+      register: health_check
+      until: health_check.status == 200
+      retries: 12 # Wait up to 60 seconds (12 * 5s)
+      delay: 5

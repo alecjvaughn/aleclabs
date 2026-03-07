@@ -5,13 +5,12 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"google.geminicodeassist",
 				"ms-python.python",
 				"hashicorp.terraform",
 				"ms-azuretools.vscode-docker",
 				"mongodb.mongodb-vscode",
-				"editorconfig.editorconfig",
-				"google.geminicodeassist",
-				"GitHub.copilot-chat"
+				"editorconfig.editorconfig"
 			]
 		}
 	},
@@ -25,6 +24,7 @@
 			"moby": false
 		}
 	},
+	"runArgs": ["--shm-size=2g"],
 	"forwardPorts": [8080, 587, 993],
 	"postCreateCommand": "pip install -r requirements.txt",
 	"remoteUser": "vscode"

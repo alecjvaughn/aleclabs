@@ -2,45 +2,20 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on PR
-on:
-  # workflow_dispatch:
-  pull_request
+on: pull_request
 permissions:
   checks: write
   contents: read
   pull-requests: write
 jobs:
   build_and_preview:
-    # if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
-      # Checks out your repository code onto the runner
       - uses: actions/checkout@v4
-      # Installs Node.js and configures caching for npm
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './my-cms/package-lock.json'
-      # Authenticates with Google Cloud using Service Account
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE }}'
-      # Fetches secrets from Secret Manager before the build
-      - uses: google-github-actions/get-secretmanager-secrets@v2
-        id: secrets
-        with:
-          secrets: |-
-            NEXT_PUBLIC_FIREBASE_API_KEY:projects/aleclabs-website/secrets/firebase_API_Key/versions/latest
-      # Installs dependencies and builds the Next.js app
       - run: npm ci && npm run build
-        working-directory: ./my-cms
-        env:
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ steps.secrets.outputs.NEXT_PUBLIC_FIREBASE_API_KEY }}
-      # Deploys the built artifacts to a preview channel on Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          entryPoint: .
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE }}
           projectId: aleclabs-website

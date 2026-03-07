@@ -1,122 +1,69 @@
-_create firecms app_\
+# AlecLabs Portfolio
+
+A modern, containerized personal portfolio and web lab built with Next.js, deployed on Google Cloud Run using Terraform and Ansible.
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React 18, TypeScript, Tailwind CSS.
+- **Infrastructure**: Google Cloud Run, Artifact Registry.
+- **IaC**: Terraform.
+- **Orchestration**: Ansible, GNU Make.
+- **Containerization**: Docker (Multi-stage builds with non-root security).
+
+## 🛠 Prerequisites
+
+Ensure you have the following installed locally:
+
+- **Node.js** (v20+) & npm
+- **Docker** (Desktop or Colima)
+- **Terraform** (v1.0+)
+- **Ansible**
+- **Google Cloud SDK** (`gcloud`)
+- **Firebase CLI** (`npm install -g firebase-tools`)
+
+## 💻 Local Development
+
+### Standard Node.js
 ```bash
-yarn create firecms-app # Scaffolds the backend CMS
-    # Scaffolding must use an empty directory to run (not the git base directory)
-        # FireCMS Community
-        # select Firebase project (aleclabs-website)
-        # choose defaults (root directory: my-cms, no git init)
-cd my-cms # default root directory
-echo .yarn > .gitignore 
-    # safe to commit
-yarn add firebase@^10 @firecms/core@^3.0.0-rc.3 @firecms/firebase@^3.0.0-rc.3 @firecms/ui@^3.0.0-rc.3 @firecms/editor@^3.0.0-rc.3 react-router@^6 react-router-dom@^6 @tailwindcss/typography typeface-rubik @fontsource/jetbrains-mono # install deps for FireCMS Community and Next.js frontend (Quickstart)
-yarn dev # test locally
-firebase init #makes this a firebase project, connects to a backend app, and optionally to github for triggered deployments
-    # adds .firebaserc, .gitignore, apphosting.yaml, and firebase.json
-    # Note: The GitHub Action service account requires the "Secret Manager Secret Accessor" role.
-    # gcloud projects add-iam-policy-binding aleclabs-website --member="serviceAccount:YOUR_SA_EMAIL" --role="roles/secretmanager.secretAccessor"
-firebase emulators:start # perform a local test of firebase (runs yarn dev for this project)
-    # if working, safe to commit
-npx create-next-app@latest # scaffolds the Next.js frontend
-    # git rm -r on ./public and ./src and recreate src (app should be installed in empty src directory)
-# These files were removed:
-    # my-cms/public/
-    # my-cms/src/
-# Merge dependencies and re-build
-    # merge resulting ./src/package.json with root package.json and remove any *.lock files, finally rerun yarn
-    # .next and node_modules should also be removed from the ./src directory and regenerated in the root directory
-    # merge the inner .gitignore with the root .gitignore
-# These files were modified:
-    # modified:   my-cms/tailwind.config.js
-    # modified:   my-cms/package.json
-    # modified:   my-cms/tsconfig.json
-    # modified:   my-cms/yarn.lock
-    # modified:   my-cms/.gitignore
-# Follow the Quickstart + Next.js tutorial to create the frontend and CMS
-# Add your backend Firebase config to the src/app/cms/FireCMSApp.tsx file
+make clean-install
+npm run dev
 ```
+Open http://localhost:3000 to view it in the browser.
 
-_deploy firebase project_\
-prerequisites: jdk (e.g. oracle jdk 25) required for local emulation
+### Dockerized
 ```bash
-firebase emulators:start #perform a local test || `yarn dev` || `npm run dev`
-firebase deploy #deploys a release from the live backend
+make docker-up
 ```
+The app will be available at http://localhost:8080.
 
-_initialize the repository_\
-prerequisites: ssh keygen and empty repo in github\
-*origin* and *main* are the upstream repo and production branch, respectively\
-remote and upstream are used interchangably
-```bash
-git init <localdir> #initialize a repo with the .git directory
-touch README.md #create an empty file
-git add . #stage the changes from the working tree
-git commit -m "initial commit" #first commit
-git remote add origin git@github.com:<username>/<localdir>.git #adds the upstream url, must be valid
-git branch -u main #set the branch locally and create if none, -u declares that it is tracked by upstream (push/pull is synchronized)
-git push -u origin main #push the changes to <branch> upstream (-u sets up a tracking branch on remote of the same name if none exists)
-```
+## ☁️ Deployment
 
-_git checkpoints_\
-```bash
-c4fd6747 (main) initial commit
-ee65326f (HEAD -> cms, origin/cms) firebase init on firecms base project -- working
-```
+This project uses Terraform to provision infrastructure (Cloud Run) and Firebase Hosting for the frontend delivery.
 
-_commit procedure_\
-three areas exist (repo, index/staging area, working tree/directory)
-```bash
-git checkout # select the context for the areas above
-git status # show the status of the work dir and index, including untracked files
-git add # stage the specified files for commit
-git rm [-r] # remove files and folders (from tracking)
-git restore [--staged] #undo specified changes to the work dir or to the index (with --staged)
-git stash [list|show|pop|apply|drop|branch] [-u|a] #changes to work dir and index are saved to and applied from the stash stack, -u includes untracked files, -a includes all including ignored files 
-git commit [--amend] #commit the staging area and be ready to push, the --amend option modifies the last commit before push and assigns a new hash
-```
+1.  **Authenticate:**
+    ```bash
+    gcloud auth application-default login
+    firebase login
+    ```
 
-_reset or clean changes to the repo/working directory_
-```bash 
-git log --oneline | grep "initial commit" #to find the hash of initial or other commit message
-git reset --[soft|mixed|hard] <HEAD~num|commit-hash> #resets the repo, then index (commit history), and finally working tree respectively to a specified commit
-git revert <commit-hash> #undo an already pushed commit and preserve its history
-git clean -ndxf #--n for dryrun, ommit to clean untracked directories and files from the working tree
-```
+2.  **Deploy Infrastructure (Cloud Run):**
+    This runs pre-flight checks, Terraform apply, and health verification for the backend service.
+    ```bash
+    make ansible-deploy
+    ```
 
->If you want to remove the "bad" commit altogether (and every commit that came after that), do a `git reset --hard ABC` (assuming ABC is the hash of the "bad" commit's elder sibling — the one you want to see as the new head commit of that branch). Then do a `git push --force` (or `git push -f`).
->
->If you just want to edit that commit, and preserve the commits that came after it, do a `git rebase -i ABC~`. This will launch your editor, showing the list of your commits, starting with the offending one. Change the flag from "pick" to "e", save the file and close the editor. Then make the necessary changes to the files, and do a `git commit -a --amend`, then do `git rebase --continue`. Follow it all up with a git push -f.
->[stackoverflow](https://stackoverflow.com/questions/30893040/remove-commit-from-history)
+3.  **Deploy Hosting (Firebase):**
+    This uploads your static assets and configures the rewrite rules to point to Cloud Run.
+    ```bash
+    make deploy-hosting
+    ```
 
->[Removing sensitive data from a repository
- - Github Docs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
+## 🕹 Command Reference
 
-_upstream procedure_\
-prerequisite: must commit any local changes
-```bash
-git pull --rebase origin <branch> #pulls the last state of the (release) branch from upstream, --rebase is used when the working branch is deviated from upstream and tries to apply any local commits on top
-git add|rm #for any merged changes
-git rebase --continue|abort|skip #continues the rebase if used, or aborts, or skips the commit entirely
-git push [-u] origin <branch> #pushes the new changes to remote and -u sets the remote branch
-```
-
-_merge requests with git_
-```bash
-git checkout [-b] <into-branch> #select the branch that will be merged into such as main or dev, -b allows for creation of new branch
-git pull <upstream> <into-branch> #ensure the desired branch is consistent with upstream
-git merge <from-branch> #select the branch that will be merged into the current branch
-git push <upstream> <into-branch> #push the changes upstream that were merged
-```
-
-_Github CLI pull request (PR)_
-```bash
-gh pr create --title "Pull Request Title" --body "Detailed description of changes" --base main --head your-feature-branch #initiate the pull request
-gh pr [review|checkout] <PR_num> [-a|c|r] [-b|F] #review the pr and allows for checkout, -a approves, -c adds a comment, -r requests a change. Comments: -b for inline, -F for file
-```
-
-_other git commands_
-```bash
-git status #gets the status of the working tree and any merges, particularly if there are any merge conflicts. To manually resolve, remove the conflict markers--preserving the desired changes, stage, and finally commit the merged changes
-git remote -v #gets the stored remote upstream urls
-git remote remove <upstream> #removes the declared upstream urls by alias
-git config -l #lists the stored config variables
-```
+| Command | Description |
+| :--- | :--- |
+| `make up` | Deploy infrastructure via Terraform. |
+| `make down` | Destroy infrastructure and cleanup. |
+| `make clean-all` | Full environment reset (Terraform, Docker, Node). |
+| `make ansible-deploy` | Orchestrate deployment with Ansible. |
+| `make deploy-hosting` | Deploy static assets and config to Firebase Hosting. |

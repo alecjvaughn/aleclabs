@@ -1,22 +1,19 @@
 {
   "hosting": {
-    "source": "my-cms",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
-  },
-  "apphosting": {
-    "backendId": "my-app-backend",
-    "rootDir": "my-cms",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "functions"
     ],
-    "alwaysDeployFromSource": true
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "nextjs-app-service",
+          "region": "us-central1"
+        }
+      }
+    ]
   }
 }

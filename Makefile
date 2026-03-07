@@ -1,68 +1,77 @@
-# Variables
+# --- Configuration ---
 TF_DIR := infrastructure
 APP_NAME := production_service
-APP_IMAGE := local/my-app:latest
-MIDDLEWARE_IMAGE := local/python_middleware:latest
-ROOT_IMAGE := local/root_base:latest
 PORT := 8080
 
-.PHONY: help up down reload logs tf-init docker-up docker-down docker-clean clean-install docker-rebuild
+# Docker Images
+ROOT_IMAGE := local/root_base:latest
+MIDDLEWARE_IMAGE := local/node_middleware:latest
+APP_IMAGE := local/my-app:latest
+
+# Docker Files
+ROOT_DOCKERFILE := docker/images/root/Dockerfile
+MIDDLEWARE_DOCKERFILE := docker/images/middleware/Dockerfile
+APP_DOCKERFILE := docker/images/app/Dockerfile
+
+# --- Main Targets ---
+.PHONY: help up down reload logs
+.PHONY: tf-init tf-apply tf-destroy tf-clean
+.PHONY: docker-up docker-down docker-build docker-rebuild docker-clean
+.PHONY: clean clean-deps clean-install clean-all
+.PHONY: clean-cloud-images
+.PHONY: ansible-deploy
 
 help:
 	@echo "Usage:"
-	@echo "  make up          : Start the application using Terraform (Preferred)"
-	@echo "  make down        : Destroy infrastructure and clean up images"
-	@echo "  make reload      : Rebuild the app image and restart (Terraform)"
-	@echo "  make tf-clean    : Remove Terraform state and lock files"
-	@echo "  make logs        : View container logs"
-	@echo "  make docker-up   : Build and run using Docker commands (Alternative)"
-	@echo "  make docker-down : Stop and remove Docker container"
-	@echo "  make docker-rebuild : Force rebuild of Docker images (no cache)"
-	@echo "  make clean-install : Clean node_modules and reinstall dependencies"
+	@echo "  make up             : Deploy application using Terraform (Preferred)"
+	@echo "  make down           : Destroy infrastructure and cleanup"
+	@echo "  make reload         : Rebuild and redeploy app image via Terraform"
+	@echo "  make logs           : View container logs (Local Docker)"
+	@echo "  make clean          : Remove Next.js build artifacts (.next)"
+	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
+	@echo "  make clean-cloud-images : Delete all images in Artifact Registry"
+	@echo "  make ansible-deploy : Deploy using Ansible"
+	@echo "  make deploy-hosting : Deploy to Firebase Hosting"
 
-# --- Terraform Workflow (Preferred) ---
+# --- Terraform Workflow ---
 
 tf-init:
 	cd $(TF_DIR) && terraform init
 
-up: tf-init
+tf-apply: tf-init
 	cd $(TF_DIR) && terraform apply -auto-approve
 
-# Thorough cleanup: Destroy resources and ensure images are removed
-down:
+tf-destroy:
 	cd $(TF_DIR) && terraform destroy -auto-approve
-	@echo "Cleaning up any dangling images..."
-	-docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) 2>/dev/null || true
-	-docker network rm data_platform_network 2>/dev/null || true
 
-# Remove Terraform state, locks, and cached plugins for a fresh start
 tf-clean:
 	rm -rf $(TF_DIR)/.terraform $(TF_DIR)/.terraform.lock.hcl $(TF_DIR)/terraform.tfstate $(TF_DIR)/terraform.tfstate.backup
 
-# Clean node_modules and reinstall dependencies locally
-clean-install:
-	rm -rf node_modules package-lock.json
-	npm install
+up: tf-apply
 
-# Force rebuild of the application image without destroying network/base images
+down: tf-destroy
+	@echo "Cleaning up any dangling images..."
+	-docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) 2>/dev/null || true
+	-docker network rm data_platform_network 2>/dev/null || true
+	@echo "Note: Run 'firebase hosting:disable' manually to remove the frontend site."
+
 reload:
 	cd $(TF_DIR) && terraform taint docker_image.my_app
+	cd $(TF_DIR) && terraform taint docker_image.node_middleware
+	cd $(TF_DIR) && terraform taint docker_image.root_base
 	cd $(TF_DIR) && terraform apply -auto-approve
 
-logs:
-	docker logs -f $(APP_NAME)
-
-# --- Docker Manual Workflow (Alternative) ---
+# --- Docker Manual Workflow ---
 
 docker-build:
-	docker build -t $(ROOT_IMAGE) -f docker/images/root/Dockerfile .
-	docker build -t $(MIDDLEWARE_IMAGE) -f docker/images/middleware/Dockerfile .
-	docker build -t $(APP_IMAGE) -f docker/images/app/Dockerfile .
+	docker build -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
+	docker build -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
+	docker build -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
 
 docker-rebuild:
-	docker build --no-cache -t $(ROOT_IMAGE) -f docker/images/root/Dockerfile .
-	docker build --no-cache -t $(MIDDLEWARE_IMAGE) -f docker/images/middleware/Dockerfile .
-	docker build --no-cache -t $(APP_IMAGE) -f docker/images/app/Dockerfile .
+	docker build --no-cache -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
+	docker build --no-cache -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
+	docker build --no-cache -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
 
 docker-run: docker-build
 	docker run --rm -d --name $(APP_NAME) \
@@ -78,6 +87,44 @@ docker-up: docker-run
 docker-down:
 	docker stop $(APP_NAME) || true
 	docker rm $(APP_NAME) || true
+	docker network rm data_platform_network || true
 
 docker-clean: docker-down
 	docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) || true
+
+# --- Firebase Workflow ---
+
+deploy-hosting:
+	firebase deploy --only hosting
+
+# --- Utility & Cleanup ---
+
+logs:
+	docker logs -f $(APP_NAME)
+
+clean-artifacts:
+	rm -rf .next .firebase
+
+clean-deps:
+	rm -rf node_modules package-lock.json
+
+clean-install: clean-artifacts clean-deps
+	npm install
+
+clean-all: docker-down down tf-clean clean-artifacts clean-deps
+	@echo "Environment totally cleaned."
+	@echo "Running 'npm install' to reset dependencies..."
+	npm install
+	@echo "Done."
+
+clean-hosting:
+	# Delete all images in the repository (requires confirmation)
+	gcloud artifacts docker images delete \
+		us-central1-docker.pkg.dev/aleclabs-website/nextjs-repo/my-app \
+		--delete-tags
+	firebase hosting:disable
+
+# --- Ansible ---
+
+ansible-deploy:
+	ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
