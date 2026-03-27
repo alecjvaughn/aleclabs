@@ -1,8 +1,7 @@
-import React from 'react';
-import AboutPage from './about/page';
+import AboutContent from './pages/about/page';
 
-export default function Page() {
+export default async function HomePage() {
   return (
-    <AboutPage />
+    <AboutContent />
   );
 }

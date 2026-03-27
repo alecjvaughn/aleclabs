@@ -27,7 +27,7 @@ help:
 	@echo "  make down           : Destroy infrastructure and cleanup"
 	@echo "  make reload         : Rebuild and redeploy app image via Terraform"
 	@echo "  make logs           : View container logs (Local Docker)"
-	@echo "  make clean          : Remove Next.js build artifacts (.next)"
+	@echo "  make clean-deps     : Remove Next.js build artifacts (.next)"
 	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
 	@echo "  make clean-cloud-images : Delete all images in Artifact Registry"
 	@echo "  make ansible-deploy : Deploy using Ansible"

@@ -11,12 +11,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <header style={{ backgroundColor: '#fff', padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
-          <nav style={{ maxWidth: '768px', margin: '0 auto', display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            {/* <Link href="/" style={{ textDecoration: 'none', color: '#374151' }}>Home</Link> */}
-            <Link href="/about" style={{ textDecoration: 'none', color: '#374151' }}>About</Link>
-            {/* <Link href="/timeline" style={{ textDecoration: 'none', color: '#374151' }}>Timeline</Link> */}
-            <Link href="/resume" style={{ textDecoration: 'none', color: '#374151' }}>Resume</Link>
+        <header className="bg-white dark:bg-zinc-900 p-4 border-b border-gray-200 dark:border-zinc-800">
+          <nav className="max-w-3xl mx-auto flex gap-6 justify-center flex-wrap">
+            <Link href="/" className="no-underline text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">About</Link>
+            {/* <Link href="/pages/about" className="no-underline text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">About</Link> */}
+            {/* <Link href="/pages/timeline" className="no-underline text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">Timeline</Link> */}
+            <Link href="/pages/resume" className="no-underline text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">Resume</Link>
           </nav>
         </header>
         {children}
