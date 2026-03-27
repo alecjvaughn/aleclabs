@@ -17,7 +17,7 @@ APP_DOCKERFILE := docker/images/app/Dockerfile
 .PHONY: help up down reload logs
 .PHONY: tf-init tf-apply tf-destroy tf-clean
 .PHONY: docker-up docker-down docker-build docker-rebuild docker-clean
-.PHONY: clean clean-deps clean-install clean-all
+.PHONY: clean clean-artifacts clean-deps clean-install clean-all
 .PHONY: clean-cloud-images
 .PHONY: ansible-deploy
 
@@ -28,10 +28,10 @@ help:
 	@echo "  make reload         : Rebuild and redeploy app image via Terraform"
 	@echo "  make logs           : View container logs (Local Docker)"
 	@echo "  make clean-deps     : Remove Next.js build artifacts (.next)"
-	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node)"
-	@echo "  make clean-cloud-images : Delete all images in Artifact Registry"
+	@echo "  make clean-all      : Full environment reset (Terraform, Docker, Node, etc.)"
+	@echo "  make clean-cloud-images : Delete images in Artifact Registry & disable Firebase Hosting"
 	@echo "  make ansible-deploy : Deploy using Ansible"
-	@echo "  make deploy-hosting : Deploy to Firebase Hosting"
+	@echo "  make deploy-hosting : Build and deploy static site to Firebase Hosting"
 
 # --- Terraform Workflow ---
 
@@ -58,20 +58,19 @@ down: tf-destroy
 reload:
 	cd $(TF_DIR) && terraform taint docker_image.my_app
 	cd $(TF_DIR) && terraform taint docker_image.node_middleware
-	cd $(TF_DIR) && terraform taint docker_image.root_base
-	cd $(TF_DIR) && terraform apply -auto-approve
+	cd $(TF_DIR) && terraform taint docker_image.root_base	cd $(TF_DIR) && terraform apply -auto-approve
 
 # --- Docker Manual Workflow ---
 
 docker-build:
-	docker build -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
-	docker build -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
-	docker build -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
+	docker buildx build --platform linux/amd64 -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 -t $(APP_IMAGE) -f $(APP_DOCKERFILE) . --load
 
 docker-rebuild:
-	docker build --no-cache -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) .
-	docker build --no-cache -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) .
-	docker build --no-cache -t $(APP_IMAGE) -f $(APP_DOCKERFILE) .
+	docker buildx build --platform linux/amd64 --no-cache -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 --no-cache -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 --no-cache -t $(APP_IMAGE) -f $(APP_DOCKERFILE) . --load
 
 docker-run: docker-build
 	docker run --rm -d --name $(APP_NAME) \
@@ -95,6 +94,8 @@ docker-clean: docker-down
 # --- Firebase Workflow ---
 
 deploy-hosting:
+	# Ensure the 'out' directory exists to satisfy the Firebase CLI, even if it's empty.
+	mkdir -p out
 	firebase deploy --only hosting
 
 # --- Utility & Cleanup ---
@@ -117,7 +118,7 @@ clean-all: docker-down down tf-clean clean-artifacts clean-deps
 	npm install
 	@echo "Done."
 
-clean-hosting:
+clean-cloud-images:
 	# Delete all images in the repository (requires confirmation)
 	gcloud artifacts docker images delete \
 		us-central1-docker.pkg.dev/aleclabs-website/nextjs-repo/my-app \
