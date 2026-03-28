@@ -53,7 +53,7 @@ This project uses Terraform to provision infrastructure (Cloud Run) and Firebase
     ```
 
 3.  **Deploy Hosting (Firebase):**
-    This uploads your static assets and configures the rewrite rules to point to Cloud Run.
+    This deploys the Firebase Hosting configuration, which contains the rewrite rules that point to the Cloud Run service.
     ```bash
     make deploy-hosting
     ```
@@ -66,4 +66,4 @@ This project uses Terraform to provision infrastructure (Cloud Run) and Firebase
 | `make down` | Destroy infrastructure and cleanup. |
 | `make clean-all` | Full environment reset (Terraform, Docker, Node). |
 | `make ansible-deploy` | Orchestrate deployment with Ansible. |
-| `make deploy-hosting` | Deploy static assets and config to Firebase Hosting. |
+| `make deploy-hosting` | Deploy Firebase Hosting configuration. |
