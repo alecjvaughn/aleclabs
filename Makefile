@@ -56,9 +56,8 @@ down: tf-destroy
 	@echo "Note: Run 'firebase hosting:disable' manually to remove the frontend site."
 
 reload:
-	cd $(TF_DIR) && terraform taint docker_image.my_app
-	cd $(TF_DIR) && terraform taint docker_image.node_middleware
-	cd $(TF_DIR) && terraform taint docker_image.root_base	cd $(TF_DIR) && terraform apply -auto-approve
+	cd $(TF_DIR) && terraform taint docker_image.my_app docker_image.node_middleware docker_image.root_base
+	cd $(TF_DIR) && terraform apply -auto-approve
 
 # --- Docker Manual Workflow ---
 
