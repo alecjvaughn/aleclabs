@@ -93,8 +93,8 @@ docker-clean: docker-down
 # --- Firebase Workflow ---
 
 deploy-hosting:
-	# Ensure the 'out' directory exists to satisfy the Firebase CLI, even if it's empty.
-	mkdir -p out
+	# Ensure the placeholder public directory exists to satisfy the Firebase CLI.
+	mkdir -p public
 	firebase deploy --only hosting
 
 # --- Utility & Cleanup ---
