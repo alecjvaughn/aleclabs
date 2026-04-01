@@ -4,7 +4,7 @@
 .pnp.js
 
 # testing
-/_temp_/
+/sbx/
 /coverage
 
 # next.js

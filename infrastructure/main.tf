@@ -39,50 +39,7 @@ resource "google_artifact_registry_repository" "app_repo" {
   depends_on    = [google_project_service.artifact_registry]
 }
 
-# 1. Build the Root Image (Level 1)
-resource "docker_image" "root_base" {
-  name = "local/root_base:latest"
-  build {
-    context    = ".." # Path to Root Dockerfile
-    dockerfile = "docker/images/root/Dockerfile"
-    platform   = "linux/amd64"
-  }
-}
-
-# 2. Build the Intermediate Image (Level 2)
-resource "docker_image" "node_middleware" {
-  name = "local/node_middleware:latest"
-  build {
-    context    = ".."
-    dockerfile = "docker/images/middleware/Dockerfile"
-    platform   = "linux/amd64"
-  }
-  # Ensure Root is built first
-  depends_on = [docker_image.root_base]
-}
-
-# 3. Build the Application Image (Level 3)
-resource "docker_image" "my_app" {
-  name = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.app_repo.repository_id}/my-app:latest"
-  build {
-    context    = ".."
-    dockerfile = "docker/images/app/Dockerfile"
-    platform   = "linux/amd64"
-  }
-  # Ensure Middleware is built first
-  depends_on = [docker_image.node_middleware]
-}
-
-# Push the image to Artifact Registry
-resource "docker_registry_image" "app_push" {
-  name          = docker_image.my_app.name
-  keep_remotely = true
-  triggers = {
-    image_id = docker_image.my_app.image_id
-  }
-}
-
-# 4. Deploy to Cloud Run
+# Deploy to Cloud Run
 resource "google_cloud_run_v2_service" "default" {
   name     = "nextjs-app-service"
   location = var.region
@@ -90,7 +47,9 @@ resource "google_cloud_run_v2_service" "default" {
 
   template {
     containers {
-      image = docker_registry_image.app_push.name
+      # The image path is now static. The GitHub Actions workflow is responsible for building
+      # and pushing new versions of the image to the 'latest' tag.
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.app_repo.repository_id}/my-app:latest"
       ports {
         container_port = 8080
       }
@@ -100,7 +59,10 @@ resource "google_cloud_run_v2_service" "default" {
       }
     }
   }
-  depends_on = [google_project_service.cloud_run]
+  depends_on = [
+    google_project_service.cloud_run,
+    google_artifact_registry_repository.app_repo
+  ]
 }
 
 # Make the service public

@@ -54,12 +54,12 @@ This project uses Terraform to provision infrastructure (Cloud Run) and Firebase
         - `Firebase Hosting Admin` (`roles/firebasehosting.admin`)
 
 2.  **Deploy Infrastructure (Cloud Run):**
-    This runs pre-flight checks, Terraform apply, and health verification for the backend service.
+    This uses Terraform to provision the necessary cloud infrastructure like Cloud Run and Artifact Registry. Application code is deployed separately via GitHub Actions on a push to the `main` branch.
     ```bash
     make ansible-deploy
     ```
 
-3.  **Deploy Hosting (Firebase):**
+3.  **Deploy Hosting Configuration (Firebase):**
     This deploys the Firebase Hosting configuration, which contains the rewrite rules that point to the Cloud Run service.
     ```bash
     make deploy-hosting

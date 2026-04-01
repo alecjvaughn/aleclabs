@@ -55,10 +55,6 @@ down: tf-destroy
 	-docker network rm data_platform_network 2>/dev/null || true
 	@echo "Note: Run 'firebase hosting:disable' manually to remove the frontend site."
 
-reload:
-	cd $(TF_DIR) && terraform taint docker_image.my_app docker_image.node_middleware docker_image.root_base
-	cd $(TF_DIR) && terraform apply -auto-approve
-
 # --- Docker Manual Workflow ---
 
 docker-build:
