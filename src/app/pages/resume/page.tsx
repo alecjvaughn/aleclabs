@@ -2,7 +2,8 @@ import Image from 'next/image';
 import { getMarkdownContent } from '../../markdown';
 
 export default async function ResumePage() {
-  const resumeContent = await getMarkdownContent('resume.md');
+  // The path is now relative to the project root where the external repo is checked out.
+  const resumeContent = await getMarkdownContent('content/resume/resume.md');
 
   return (
     <div className="flex min-h-screen justify-center font-sans">

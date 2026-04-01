@@ -1,0 +1,50 @@
+name: Fetch Content and Build
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout your main application repository
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+
+      # 2. Checkout external repositories into a specific directory
+      # This example assumes your 'about.md' is in a repo called 'about-content-repo'
+      - name: Checkout 'about' content repo
+        uses: actions/checkout@v4
+        with:
+          repository: <your-github-username>/about-content-repo
+          path: content/about
+          # If the repo is private, you'll need a Personal Access Token (PAT)
+          # token: ${{ secrets.YOUR_PAT }}
+
+      # This example assumes your 'resume.md' is in a repo called 'resume-content-repo'
+      - name: Checkout 'resume' content repo
+        uses: actions/checkout@v4
+        with:
+          repository: <your-github-username>/resume-content-repo
+          path: content/resume
+          # token: ${{ secrets.YOUR_PAT }}
+
+      # 3. Setup Node.js and build your application
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # or yarn, pnpm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      # 4. (Optional) Deploy your application
+      # - name: Deploy to Vercel, Netlify, etc.
+      #   ...
