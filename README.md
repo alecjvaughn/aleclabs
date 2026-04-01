@@ -45,6 +45,13 @@ This project uses Terraform to provision infrastructure (Cloud Run) and Firebase
     gcloud auth application-default login
     firebase login
     ```
+    **For GitHub Actions deployments**, ensure you have the following repository secrets configured. When creating the secrets, paste the **entire contents** of the downloaded JSON key file.
+    1.  `GCP_SA_KEY`: Contains the JSON key for a service account used to deploy to Cloud Run. It requires these minimum IAM roles:
+        - `Cloud Run Developer` (`roles/run.developer`)
+        - `Artifact Registry Writer` (`roles/artifactregistry.writer`)
+        - `Service Account User` (`roles/iam.serviceAccountUser`)
+    2.  `FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE`: Contains the JSON key for a service account used to deploy to Firebase Hosting. It requires this minimum IAM role:
+        - `Firebase Hosting Admin` (`roles/firebasehosting.admin`)
 
 2.  **Deploy Infrastructure (Cloud Run):**
     This runs pre-flight checks, Terraform apply, and health verification for the backend service.

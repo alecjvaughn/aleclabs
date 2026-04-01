@@ -28,12 +28,11 @@ ENV NODE_ENV=production
 ENV PORT=8080
 EXPOSE 8080
 
-# Copy only the necessary production artifacts from the builder stage
-COPY --chown=secureuser:pipeline --from=builder /app/public ./public
-COPY --chown=secureuser:pipeline --from=builder /app/.next ./.next
-COPY --chown=secureuser:pipeline --from=builder /app/package.json ./package.json
-COPY --chown=secureuser:pipeline --from=builder /app/node_modules ./node_modules
+# Copy the standalone output, which includes only necessary production files.
+# This also copies the .next/static and public folders automatically.
+COPY --chown=secureuser:pipeline --from=builder /app/.next/standalone ./
 
 USER secureuser
-CMD ["npm", "start"]
 
+# The standalone output creates a server.js file as the entrypoint.
+CMD ["node", "server.js"]

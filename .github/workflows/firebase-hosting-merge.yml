@@ -9,10 +9,13 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      # Required to checkout the code
+      contents: 'read'
     steps:
       - uses: actions/checkout@v4
       # Create the placeholder directory that firebase.json points to.
-      - run: mkdir -p public_placeholder
+      - run: mkdir -p public
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
