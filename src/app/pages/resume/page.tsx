@@ -3,7 +3,7 @@ import { getMarkdownContent } from '../../markdown';
 
 export default async function ResumePage() {
   // The path is now relative to the project root where the external repo is checked out.
-  const resumeContent = await getMarkdownContent('content/resume/resume.md');
+  const resumeContent = await getMarkdownContent('resume.md');
 
   return (
     <div className="flex min-h-screen justify-center font-sans">

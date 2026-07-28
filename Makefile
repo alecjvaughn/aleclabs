@@ -59,7 +59,7 @@ down: tf-destroy
 
 test-docker:
 	@echo "Running Docker build test (TDD Red/Green Phase)..."
-	@docker buildx build --platform linux/amd64 -t test-image -f docker/images/app/Dockerfile . --load || (echo "ERROR: Docker build failed!" && exit 1)
+	@docker buildx build --platform linux/amd64 -t test-image . --load || (echo "ERROR: Docker build failed!" && exit 1)
 	@echo "SUCCESS: Docker build passed!"
 
 docker-build:
