@@ -57,6 +57,11 @@ down: tf-destroy
 
 # --- Docker Manual Workflow ---
 
+test-docker:
+	@echo "Running Docker build test (TDD Red/Green Phase)..."
+	@docker buildx build --platform linux/amd64 -t test-image -f docker/images/app/Dockerfile . --load || (echo "ERROR: Docker build failed!" && exit 1)
+	@echo "SUCCESS: Docker build passed!"
+
 docker-build:
 	docker buildx build --platform linux/amd64 -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) . --load
 	docker buildx build --platform linux/amd64 -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) . --load
