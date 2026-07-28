@@ -1,14 +1,15 @@
 # AlecLabs Portfolio
 
-A modern, containerized personal portfolio and web lab built with Next.js, deployed on Google Cloud Run using Terraform and Ansible.
+A modern, containerized personal portfolio and web lab built with Next.js (App Router), deployed on an always-on Kubernetes (k3s) cluster via GitOps.
 
 ## 🚀 Tech Stack
 
 - **Frontend**: Next.js 16 (App Router), React 18, TypeScript, Tailwind CSS.
-- **Infrastructure**: Google Cloud Run, Artifact Registry.
+- **3D & Animation**: React Three Fiber, Framer Motion, Native CSS Scroll-driven animations.
+- **Infrastructure**: Hetzner Cloud VPS (k3s Cluster), Cloudflare (CDN).
 - **IaC**: Terraform.
-- **Orchestration**: Ansible, GNU Make.
-- **Containerization**: Docker (Multi-stage builds with non-root security).
+- **Orchestration / GitOps**: Kubernetes, ArgoCD.
+- **Containerization**: Docker.
 
 ## 🛠 Prerequisites
 
@@ -17,60 +18,30 @@ Ensure you have the following installed locally:
 - **Node.js** (v20+) & npm
 - **Docker** (Desktop or Colima)
 - **Terraform** (v1.0+)
-- **Ansible**
-- **Google Cloud SDK** (`gcloud`)
-- **Firebase CLI** (`npm install -g firebase-tools`)
+- **kubectl** (for interacting with the k3s cluster)
 
 ## 💻 Local Development
 
-### Standard Node.js
 ```bash
-make clean-install
+npm install
 npm run dev
 ```
 Open http://localhost:3000 to view it in the browser.
 
-### Dockerized
-```bash
-make docker-up
-```
-The app will be available at http://localhost:8080.
+## ☁️ Deployment Architecture
 
-## ☁️ Deployment
+This project has migrated from a Serverless Google Cloud Run architecture to a bare-metal Kubernetes deployment on Hetzner Cloud. 
+This migration enables an always-on infrastructure playground (eliminating serverless cold starts) and serves as a demonstration of advanced SRE/Platform Engineering skills (GitOps, declarative infrastructure).
 
-This project uses Terraform to provision infrastructure (Cloud Run) and Firebase Hosting for the frontend delivery.
+Read the detailed [Architecture Documentation](./ARCHITECTURE.md) for more information on the infrastructure and the justification behind the tech stack choices.
 
-1.  **Authenticate:**
-    ```bash
-    gcloud auth application-default login
-    firebase login
-    ```
-    **For GitHub Actions deployments**, ensure you have the following repository secrets configured. When creating the secrets, paste the **entire contents** of the downloaded JSON key file.
-    1.  `GCP_SA_KEY`: Contains the JSON key for a service account used to deploy to Cloud Run. It requires these minimum IAM roles:
-        - `Cloud Run Developer` (`roles/run.developer`)
-        - `Artifact Registry Writer` (`roles/artifactregistry.writer`)
-        - `Service Account User` (`roles/iam.serviceAccountUser`)
-    2.  `FIREBASE_SERVICE_ACCOUNT_ALECLABS_WEBSITE`: Contains the JSON key for a service account used to deploy to Firebase Hosting. It requires this minimum IAM role:
-        - `Firebase Hosting Admin` (`roles/firebasehosting.admin`)
+### Deployment Flow
 
-2.  **Deploy Infrastructure (Cloud Run):**
-    This uses Terraform to provision the necessary cloud infrastructure like Cloud Run and Artifact Registry. Application code is deployed separately via GitHub Actions on a push to the `main` branch.
-    ```bash
-    make ansible-deploy
-    ```
+1.  **Provision Infrastructure:**
+    Terraform is used to provision the foundational Hetzner Cloud VPS instances and configure the initial networking/firewalls.
 
-3.  **Deploy Hosting Configuration (Firebase):**
-    This deploys the Firebase Hosting configuration, which contains the rewrite rules that point to the Cloud Run service.
-    ```bash
-    make deploy-hosting
-    ```
+2.  **Cluster Bootstrapping:**
+    A lightweight Kubernetes distribution (`k3s`) is deployed onto the VPS.
 
-## 🕹 Command Reference
-
-| Command | Description |
-| :--- | :--- |
-| `make up` | Deploy infrastructure via Terraform. |
-| `make down` | Destroy infrastructure and cleanup. |
-| `make clean-all` | Full environment reset (Terraform, Docker, Node). |
-| `make ansible-deploy` | Orchestrate deployment with Ansible. |
-| `make deploy-hosting` | Deploy Firebase Hosting configuration. |
+3.  **GitOps (ArgoCD):**
+    Application code and Kubernetes manifests are synchronized automatically via ArgoCD. When changes are merged to the `main` branch, a CI pipeline builds and pushes the Docker container to a registry, and ArgoCD automatically pulls the new image and updates the cluster state.

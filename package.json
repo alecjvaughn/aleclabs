@@ -1,5 +1,5 @@
 {
-  "name": "aleclabs-bbc",
+  "name": "aleclabs-home",
   "private": true,
   "scripts": {
     "dev": "next dev",
