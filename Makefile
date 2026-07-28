@@ -4,14 +4,7 @@ APP_NAME := production_service
 PORT := 8080
 
 # Docker Images
-ROOT_IMAGE := local/root_base:latest
-MIDDLEWARE_IMAGE := local/node_middleware:latest
 APP_IMAGE := local/my-app:latest
-
-# Docker Files
-ROOT_DOCKERFILE := docker/images/root/Dockerfile
-MIDDLEWARE_DOCKERFILE := docker/images/middleware/Dockerfile
-APP_DOCKERFILE := docker/images/app/Dockerfile
 
 # --- Main Targets ---
 .PHONY: help up down reload logs
@@ -51,7 +44,7 @@ up: tf-apply
 
 down: tf-destroy
 	@echo "Cleaning up any dangling images..."
-	-docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) 2>/dev/null || true
+	-docker rmi $(APP_IMAGE) 2>/dev/null || true
 	-docker network rm data_platform_network 2>/dev/null || true
 	@echo "Note: Run 'firebase hosting:disable' manually to remove the frontend site."
 
@@ -63,14 +56,10 @@ test-docker:
 	@echo "SUCCESS: Docker build passed!"
 
 docker-build:
-	docker buildx build --platform linux/amd64 -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) . --load
-	docker buildx build --platform linux/amd64 -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) . --load
-	docker buildx build --platform linux/amd64 -t $(APP_IMAGE) -f $(APP_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 -t $(APP_IMAGE) . --load
 
 docker-rebuild:
-	docker buildx build --platform linux/amd64 --no-cache -t $(ROOT_IMAGE) -f $(ROOT_DOCKERFILE) . --load
-	docker buildx build --platform linux/amd64 --no-cache -t $(MIDDLEWARE_IMAGE) -f $(MIDDLEWARE_DOCKERFILE) . --load
-	docker buildx build --platform linux/amd64 --no-cache -t $(APP_IMAGE) -f $(APP_DOCKERFILE) . --load
+	docker buildx build --platform linux/amd64 --no-cache -t $(APP_IMAGE) . --load
 
 docker-run: docker-build
 	docker run --rm -d --name $(APP_NAME) \
@@ -89,7 +78,7 @@ docker-down:
 	docker network rm data_platform_network || true
 
 docker-clean: docker-down
-	docker rmi $(APP_IMAGE) $(MIDDLEWARE_IMAGE) $(ROOT_IMAGE) || true
+	docker rmi $(APP_IMAGE) || true
 
 # --- Firebase Workflow ---
 

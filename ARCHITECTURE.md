@@ -24,6 +24,12 @@ The new architecture relies on three primary pillars:
 2. **Kubernetes (k3s)**: A lightweight K8s distribution running on the Hetzner node, exposing services via an Ingress Controller (Traefik/NGINX).
 3. **ArgoCD (GitOps)**: Monitors the GitHub repository and automatically synchronizes the cluster state with the manifests defined in code, enabling Blue/Green deployments.
 
+### Docker Containerization Strategy
+To ensure the Next.js application remains lightweight and secure within the cluster, the project utilizes an optimized multi-stage `Dockerfile` at the repository root. This approach replaces legacy layered image strategies (e.g., separate base/middleware images).
+- **Multi-Stage Build**: Separates dependency installation, building, and the final runtime environment.
+- **Standalone Output**: Leverages Next.js `output: 'standalone'` to trim node_modules, resulting in a minimal production image containing only necessary files.
+- **Security**: The final image runs under a non-root `nextjs` user and group to comply with Kubernetes security best practices.
+
 ### Pipeline Diagram
 
 ```mermaid
