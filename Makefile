@@ -37,16 +37,22 @@ local-deploy: build
 	kind load docker-image $(APP_IMAGE) --name $(CLUSTER_NAME)
 	@echo "Installing NGINX Ingress controller..."
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+	@echo "Installing ArgoCD..."
+	kubectl create namespace argocd || true
+	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 	@echo "Waiting for NGINX ingress controller to be ready..."
 	sleep 5
 	kubectl wait --namespace ingress-nginx \
 	  --for=condition=ready pod \
 	  --selector=app.kubernetes.io/component=controller \
 	  --timeout=90s || true
-	@echo "Applying Kubernetes manifests..."
-	kubectl apply -f k8s/base/
-	@echo "Waiting for deployment rollout..."
-	kubectl rollout status deployment/aleclabs-home
+	@echo "Waiting for ArgoCD server to be ready..."
+	kubectl wait --namespace argocd \
+	  --for=condition=ready pod \
+	  --selector=app.kubernetes.io/name=argocd-server \
+	  --timeout=120s || true
+	@echo "Applying ArgoCD application manifests..."
+	kubectl apply -f k8s/argocd/
 
 test-infra:
 	@echo "Running Terratest infrastructure validation..."

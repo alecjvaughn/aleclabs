@@ -7,7 +7,7 @@ spec:
   project: aleclabs
   source:
     repoURL: 'https://github.com/alecjvaughn/aleclabs.git'
-    targetRevision: HEAD
+    targetRevision: feature/manage-content
     path: k8s/base
   destination:
     server: 'https://kubernetes.default.svc'
