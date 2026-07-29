@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: aleclabs
+  namespace: argocd
+spec:
+  description: "AlecLabs Main Project"
+  sourceRepos:
+  - "*"
+  destinations:
+  - namespace: default
+    server: https://kubernetes.default.svc
